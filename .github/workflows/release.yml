@@ -37,6 +37,23 @@ jobs:
           "APP_VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
           "RELEASE_TAG=v$version" | Out-File -FilePath $env:GITHUB_ENV -Append
 
+      - name: Remove existing release for clean republish
+        if: github.ref == 'refs/heads/main'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $true
+
+          try {
+            gh release view $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY | Out-Null
+            Write-Host "Removing existing $env:RELEASE_TAG release and tag before republishing."
+            gh release delete $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY --cleanup-tag --yes
+          }
+          catch {
+            Write-Host "No existing $env:RELEASE_TAG release to remove."
+          }
+
       - name: Set up .NET
         uses: actions/setup-dotnet@v4
         with:
