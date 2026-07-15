@@ -62,10 +62,26 @@ jobs:
         run: choco install innosetup --yes --no-progress
 
       - name: Build installer
+        id: package
+        continue-on-error: true
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force artifacts/installer | Out-Null
-          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DMyAppVersion=0.1.0-ci.${{ github.run_number }}" installer/DwmBorderRemover.iss
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DMyAppVersion=0.1.0-ci.${{ github.run_number }}" installer/DwmBorderRemover.iss 2>&1 |
+            Tee-Object -FilePath artifacts/inno.log
+
+      - name: Upload installer log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: DwmBorderRemover-Inno-Log
+          path: artifacts/inno.log
+          if-no-files-found: warn
+
+      - name: Fail on installer errors
+        if: steps.package.outcome == 'failure'
+        shell: pwsh
+        run: exit 1
 
       - name: Upload installer
         uses: actions/upload-artifact@v4
