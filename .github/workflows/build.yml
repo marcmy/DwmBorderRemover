@@ -26,7 +26,28 @@ jobs:
         run: dotnet restore DwmBorderRemover.sln
 
       - name: Build
-        run: dotnet build DwmBorderRemover.sln --configuration Release --no-restore
+        id: compile
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force artifacts | Out-Null
+          & dotnet build DwmBorderRemover.sln --configuration Release --no-restore 2>&1 |
+            Tee-Object -FilePath artifacts/build.log
+          $exitCode = $LASTEXITCODE
+          "exit_code=$exitCode" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          exit 0
+
+      - name: Upload compiler log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: DwmBorderRemover-Build-Log
+          path: artifacts/build.log
+          if-no-files-found: error
+
+      - name: Fail on compiler errors
+        if: steps.compile.outputs.exit_code != '0'
+        shell: pwsh
+        run: exit 1
 
       - name: Publish self-contained app
         run: >-
