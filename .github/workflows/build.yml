@@ -27,14 +27,12 @@ jobs:
 
       - name: Build
         id: compile
+        continue-on-error: true
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force artifacts | Out-Null
-          & dotnet build DwmBorderRemover.sln --configuration Release --no-restore 2>&1 |
+          dotnet build DwmBorderRemover.sln --configuration Release --no-restore 2>&1 |
             Tee-Object -FilePath artifacts/build.log
-          $exitCode = $LASTEXITCODE
-          "exit_code=$exitCode" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-          exit 0
 
       - name: Upload compiler log
         if: always()
@@ -45,7 +43,7 @@ jobs:
           if-no-files-found: error
 
       - name: Fail on compiler errors
-        if: steps.compile.outputs.exit_code != '0'
+        if: steps.compile.outcome == 'failure'
         shell: pwsh
         run: exit 1
 
