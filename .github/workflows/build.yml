@@ -1,0 +1,91 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore DwmBorderRemover.sln
+
+      - name: Build
+        id: compile
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force artifacts | Out-Null
+          dotnet build DwmBorderRemover.sln --configuration Release --no-restore 2>&1 |
+            Tee-Object -FilePath artifacts/build.log
+
+      - name: Upload compiler log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: DwmBorderRemover-Build-Log
+          path: artifacts/build.log
+          if-no-files-found: error
+
+      - name: Fail on compiler errors
+        if: steps.compile.outcome == 'failure'
+        shell: pwsh
+        run: exit 1
+
+      - name: Publish self-contained app
+        run: >-
+          dotnet publish src/DwmBorderRemover/DwmBorderRemover.csproj
+          --configuration Release
+          --runtime win-x64
+          --self-contained true
+          --output artifacts/publish
+          -p:PublishSingleFile=true
+          -p:PublishReadyToRun=true
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup --yes --no-progress
+
+      - name: Build installer
+        id: package
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force artifacts/installer | Out-Null
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DMyAppVersion=0.1.0-ci.${{ github.run_number }}" installer/DwmBorderRemover.iss 2>&1 |
+            Tee-Object -FilePath artifacts/inno.log
+
+      - name: Upload installer log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: DwmBorderRemover-Inno-Log
+          path: artifacts/inno.log
+          if-no-files-found: warn
+
+      - name: Fail on installer errors
+        if: steps.package.outcome == 'failure'
+        shell: pwsh
+        run: exit 1
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: DwmBorderRemover-Installer
+          path: artifacts/installer/*.exe
+          if-no-files-found: error
