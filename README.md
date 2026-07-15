@@ -4,6 +4,8 @@ A lightweight Windows 11 tray app that removes the thin white/gray DWM border ar
 
 It keeps the effect applied as windows open, close, restore, switch focus, or move between virtual desktops—without leaving a PowerShell process running.
 
+![DWM Border Remover options](screenshot.png)
+
 ## Features
 
 - Removes the Windows 11 one-pixel DWM border
@@ -44,7 +46,9 @@ Some applications use custom regions, frameless Chromium windows, or their own s
 
 Download the latest `DwmBorderRemover-Setup-*.exe` from Releases and run it.
 
-The installer is per-user by default, creates a normal uninstaller, and can create a desktop shortcut. The app stores settings in:
+The installer is per-user by default, creates a normal uninstaller, and can create a desktop shortcut. When upgrading while DWM Border Remover is running, Setup asks the app to restore the normal borders and exit through its local IPC channel, then restarts it automatically after the update.
+
+The app stores settings in:
 
 ```text
 %LOCALAPPDATA%\DwmBorderRemover\settings.json
