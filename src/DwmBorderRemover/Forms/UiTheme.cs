@@ -42,7 +42,7 @@ internal static class UiTheme
 
             switch (child)
             {
-                case Panel or TableLayoutPanel or FlowLayoutPanel or GroupBox:
+                case System.Windows.Forms.Panel or TableLayoutPanel or FlowLayoutPanel or GroupBox:
                     child.BackColor = Panel;
                     break;
                 case TextBox textBox:
