@@ -15,10 +15,10 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 8.0.x
 
@@ -36,7 +36,7 @@ jobs:
 
       - name: Upload compiler log
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: DwmBorderRemover-Build-Log
           path: artifacts/build.log
@@ -72,7 +72,7 @@ jobs:
 
       - name: Upload installer log
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: DwmBorderRemover-Inno-Log
           path: artifacts/inno.log
@@ -84,7 +84,7 @@ jobs:
         run: exit 1
 
       - name: Upload installer
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: DwmBorderRemover-Installer
           path: artifacts/installer/*.exe
