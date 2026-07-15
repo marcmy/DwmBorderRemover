@@ -28,6 +28,7 @@ internal sealed class OptionsForm : Form
         TableLayoutPanel root = new()
         {
             Dock = DockStyle.Fill,
+            AutoScroll = true,
             ColumnCount = 1,
             RowCount = 5,
             Padding = new Padding(22),
@@ -207,6 +208,7 @@ internal sealed class OptionsForm : Form
         };
 
         saveButton.Click += (_, _) => SaveAndClose();
+        cancelButton.Click += (_, _) => CancelAndClose();
         footer.Controls.AddRange([saveButton, cancelButton]);
 
         Panel headerPanel = new() { Dock = DockStyle.Fill, AutoSize = true, BackColor = UiTheme.Background };
@@ -242,6 +244,15 @@ internal sealed class OptionsForm : Form
     {
         base.OnHandleCreated(e);
         UiTheme.EnableImmersiveDarkMode(this);
+    }
+
+    protected override void OnShown(EventArgs e)
+    {
+        base.OnShown(e);
+
+        // Lock the minimum vertical size to the fully laid-out, DPI-scaled
+        // opening height so the list controls cannot collide with the footer.
+        MinimumSize = new Size(MinimumSize.Width, Height);
     }
 
     private static ComboBox CreateComboBox(params object[] items)
@@ -420,6 +431,13 @@ internal sealed class OptionsForm : Form
 
         ResultSettings = _workingSettings.Clone();
         DialogResult = DialogResult.OK;
+        Close();
+    }
+
+    private void CancelAndClose()
+    {
+        ResultSettings = null;
+        DialogResult = DialogResult.Cancel;
         Close();
     }
 
