@@ -21,7 +21,7 @@ internal static class WindowCatalog
 
         NativeMethods.EnumWindows((hWnd, _) =>
         {
-            if (TryGetWindowInfo(hWnd, out WindowInfo? info))
+            if (TryGetWindowInfo(hWnd, out WindowInfo? info) && info is not null)
             {
                 windows.Add(info);
             }
