@@ -6,7 +6,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <ApplicationIcon>Assets\App.ico</ApplicationIcon>
+    <GeneratedAssetsDir>$(BaseIntermediateOutputPath)GeneratedAssets</GeneratedAssetsDir>
+    <ApplicationIcon>$(GeneratedAssetsDir)\App.ico</ApplicationIcon>
     <AssemblyName>DwmBorderRemover</AssemblyName>
     <RootNamespace>DwmBorderRemover</RootNamespace>
     <Version>0.1.0</Version>
@@ -20,4 +21,17 @@
     <InvariantGlobalization>false</InvariantGlobalization>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Content Include="$(GeneratedAssetsDir)\App.ico">
+      <Link>DwmBorderRemover.ico</Link>
+      <TargetPath>DwmBorderRemover.ico</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <Target Name="GenerateApplicationIcon" BeforeTargets="PrepareForBuild">
+    <MakeDir Directories="$(GeneratedAssetsDir)" />
+    <Exec Command="powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\..\..\build\Generate-Icons.ps1&quot; -OutputPath &quot;$(GeneratedAssetsDir)\App.ico&quot;" />
+  </Target>
 </Project>
