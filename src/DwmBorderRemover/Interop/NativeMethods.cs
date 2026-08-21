@@ -1,5 +1,4 @@
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace DwmBorderRemover.Interop;
 
@@ -82,10 +81,10 @@ internal static class NativeMethods
     internal static extern IntPtr GetAncestor(IntPtr hWnd, uint flags);
 
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-    internal static extern int GetClassName(IntPtr hWnd, StringBuilder className, int maxCount);
+    internal static extern int GetClassName(IntPtr hWnd, [Out] char[] className, int maxCount);
 
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-    internal static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int maxCount);
+    internal static extern int GetWindowText(IntPtr hWnd, [Out] char[] text, int maxCount);
 
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
     internal static extern int GetWindowTextLength(IntPtr hWnd);
