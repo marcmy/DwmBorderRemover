@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Text;
 using DwmBorderRemover.Interop;
 
 namespace DwmBorderRemover.Core;
@@ -57,8 +56,8 @@ internal static class WindowCatalog
             return false;
         }
 
-        NativeMethods.GetWindowThreadProcessId(hWnd, out uint processIdValue);
-        if (processIdValue == 0 || processIdValue == Environment.ProcessId)
+        uint threadId = NativeMethods.GetWindowThreadProcessId(hWnd, out uint processIdValue);
+        if (threadId == 0 || processIdValue == 0 || processIdValue == Environment.ProcessId)
         {
             return false;
         }
@@ -130,18 +129,20 @@ internal static class WindowCatalog
 
     private static string GetClassName(IntPtr hWnd)
     {
-        StringBuilder buffer = new(256);
-        return NativeMethods.GetClassName(hWnd, buffer, buffer.Capacity) > 0
-            ? buffer.ToString()
+        char[] buffer = new char[256];
+        int length = NativeMethods.GetClassName(hWnd, buffer, buffer.Length);
+        return length > 0
+            ? new string(buffer, 0, length)
             : string.Empty;
     }
 
     private static string GetTitle(IntPtr hWnd)
     {
-        int length = Math.Clamp(NativeMethods.GetWindowTextLength(hWnd) + 1, 2, 4096);
-        StringBuilder buffer = new(length);
-        return NativeMethods.GetWindowText(hWnd, buffer, buffer.Capacity) > 0
-            ? buffer.ToString()
+        int capacity = Math.Clamp(NativeMethods.GetWindowTextLength(hWnd) + 1, 2, 4096);
+        char[] buffer = new char[capacity];
+        int length = NativeMethods.GetWindowText(hWnd, buffer, buffer.Length);
+        return length > 0
+            ? new string(buffer, 0, length)
             : string.Empty;
     }
 }

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using DwmBorderRemover.Core;
@@ -55,7 +56,8 @@ internal sealed class SettingsStore
         {
             if (File.Exists(SettingsPath))
             {
-                string backupPath = SettingsPath + ".broken-" + DateTime.Now.ToString("yyyyMMdd-HHmmss");
+                string timestamp = DateTime.Now.ToString("yyyyMMdd-HHmmss", CultureInfo.InvariantCulture);
+                string backupPath = SettingsPath + ".broken-" + timestamp;
                 File.Move(SettingsPath, backupPath, true);
             }
         }
