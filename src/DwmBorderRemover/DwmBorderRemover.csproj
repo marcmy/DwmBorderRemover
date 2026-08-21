@@ -5,6 +5,8 @@
     <UseWindowsForms>true</UseWindowsForms>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <GeneratedAssetsDir>$(BaseIntermediateOutputPath)GeneratedAssets</GeneratedAssetsDir>
     <ApplicationIcon>$(GeneratedAssetsDir)\App.ico</ApplicationIcon>
