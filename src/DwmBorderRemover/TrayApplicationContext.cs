@@ -253,7 +253,7 @@ internal sealed class TrayApplicationContext : ApplicationContext
         }
     }
 
-    private void ShowAbout()
+    private static void ShowAbout()
     {
         const string message =
             "DWM Border Remover removes Windows 11's one-pixel DWM window border.\n\n" +
